@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { Pokemon } from '../model.ts/pokemon';
 
 @Injectable({
   providedIn: 'root'
@@ -23,18 +24,18 @@ export class ConnectionService {
     //   .then(resp => resp.json())
     //   .then(chimchar => console.log('Ecco Chimchar PROMISE', chimchar))
 
-    return fetch(this.CHIMCHAR_URL).then(resp => resp.json())
+    return fetch(this.CHIMCHAR_URL).then(resp => resp.json() as unknown as Pokemon)
   }
 
   //  --- GET OBSERVABLE ---
-  getChimcharWithObservable(): Observable<object> {
+  getChimcharWithObservable(): Observable<Pokemon> {
     // this.http.get(this.CHIMCHAR_URL)
     //   .subscribe({
     //     next: chimchar => console.log('Ecco Chimchar OBSERVABLE', chimchar),
     //     error: err => console.log(err)
     //   })
 
-    return this.http.get(this.CHIMCHAR_URL)
+    return this.http.get<Pokemon>(this.CHIMCHAR_URL)
   }
 
 }
