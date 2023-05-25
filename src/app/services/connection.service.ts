@@ -16,9 +16,10 @@ export class ConnectionService {
 
     this.getChimcharWithPromise();
     this.getChimcharWithObservable();
-    // this.getFirst20PokemonWithPromise();
-    // this.getFirst20PokemonWithObservable();
-    // this.getFirstAbilityPromise();
+    this.getFirst20PokemonWithPromise();
+    this.getFirst20PokemonWithObservable();
+    this.getFirstAbilityPromise();
+    
   }
 
 
