@@ -1,7 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, forkJoin, switchMap } from 'rxjs';
 import { Pokemon } from '../model.ts/pokemon';
+import { BaseData } from '../model.ts/base-data';
 
 @Injectable({
   providedIn: 'root'
@@ -17,6 +18,7 @@ export class ConnectionService {
     this.getChimcharWithObservable();
     // this.getFirst20PokemonWithPromise();
     // this.getFirst20PokemonWithObservable();
+    // this.getFirstAbilityPromise();
   }
 
 
@@ -57,7 +59,7 @@ export class ConnectionService {
   //  --- GET OBSERVABLE ---
   getFirst20PokemonWithObservable(): Observable<Pokemon[]> {
 
-    const getArray=[];
+    const getArray = [];
 
     for (let i = 1; i < 21; i++) {
       const url = this.ALL_POKEMON_URL + '/' + i + '/'
@@ -66,28 +68,67 @@ export class ConnectionService {
       const request = this.http.get<Pokemon>(url);
       getArray.push(request)
     }
-    return forkjoin(getArray);
+    return forkJoin(getArray);
   }
 
-  getFirstAbilityPromise(){
+
+  //  --- GET PROMISE ---
+  getFirstAbilityPromise(): Promise<any> {
     return fetch(this.CHIMCHAR_URL)
-    .then(resp=> resp.json())
-    .then(chimchar=> {
-      const abilities = chimchar.abilities;
-      const firstAbility = abilities[0];
-      const ability = firstAbility.ability;
-      const abilityUrl = ability.url
-      return fetch(abilityUrl).then(resp=> resp.json())
-    })
+      .then(resp => resp.json())
+      .then(chimchar => {
+        const abilities = chimchar.abilities;
+        const firstAbility = abilities[0];
+        const ability = firstAbility.ability;
+        const abilityUrl = ability.url
+        return fetch(abilityUrl).then(resp => resp.json());
+      })
+  }
+
+  //  --- GET OBSERVABLE ---
+  getFirstAbilityObservable() {
+    return this.http.get<Pokemon>(this.CHIMCHAR_URL).pipe(
+      switchMap((chimchar) => {
+        const abilities = chimchar.abilities;
+        const firstAbility = abilities[0];
+        const ability = firstAbility.ability;
+        const abilityUrl = ability.url
+        return this.http.get(abilityUrl)
+      })
+    )
   }
 
 
-  getFirstAbilityObservable(){
-
+  getAllPokemonsWithPromise() {
+    return fetch(this.ALL_POKEMON_URL)
+      .then(resp => resp.json())
+      .then(pokemons => {
+        const results = pokemons.results;
+        const fetchArray = []
+        for (const result of results) {
+          const request = fetch(result.url).then(res => res.json());
+          fetchArray.push(request)
+        }
+        return Promise.all(fetchArray);
+      })
   }
 
-}
-function forkjoin(getArray: Observable<Pokemon>[]): Observable<Pokemon[]> {
-  throw new Error('Function not implemented.');
-}
+  getAllPokemonsWithObservable(): Observable<Pokemon[]> {
+    return this.http.get<BaseData>(this.ALL_POKEMON_URL).pipe(
+      switchMap(pokemons => {
+        const results = pokemons.results;
+        const getArray = []
+        for (const result of results) {
+          const request = fetch(result.url).then(res => res.json());
+          getArray.push(request)
+        }
+        return forkJoin(getArray);
+      })
+    )
+  }
 
+
+
+
+
+}

@@ -10,7 +10,7 @@ export class AppComponent {
 
   constructor(private connService: ConnectionService) {
 
-    //  PROMIS
+    //  PROMISE
     connService.getChimcharWithPromise()
       .then(chimchar => console.log('Chimchar con fetch nel component', chimchar))
 
@@ -23,23 +23,38 @@ export class AppComponent {
 
 
 
-
-    //  PROMIS
+    //  PROMISE
     connService.getFirst20PokemonWithPromise()
-      .then(pokemons => console.log('first 20 pokemon', pokemons))
+      .then(pokemons => console.log('first 20 pokemon fetch', pokemons))
 
-console.log('-------------------------------------')
 
     //  OSSERVABLE
     connService.getFirst20PokemonWithObservable()
       .subscribe({
-        next: pokemons => console.log(pokemons),
+        next: pokemons => console.log('first 20 pokemon https get', pokemons),
+        error: err => console.log(err)
+      })
+
+
+    //  PROMISE
+    connService.getChimcharWithPromise()
+      .then(ability => console.log('first ability with fetch', ability))
+
+    //  OSSERVABLE
+    connService.getChimcharWithObservable()
+      .subscribe({
+        next: ability => console.log('first ablity http get', ability),
         error: err => console.log(err)
       })
 
 
 
-  }
 
+
+
+
+
+
+  }
   title = 'rxjs-test';
 }
