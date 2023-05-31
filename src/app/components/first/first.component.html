@@ -1,0 +1,12 @@
+
+<h3>First Component</h3>
+
+<div>
+  <span *ngFor="let counterValue of dataServ.counterValuesSubject | async">
+    <ul>
+      <li>
+        {{counterValue.changes}}: <b>{{counterValue.value}} type:{{counterValue.type}} </b>
+      </li>
+    </ul>
+  </span>
+</div>
